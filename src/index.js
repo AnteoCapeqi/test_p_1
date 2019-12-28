@@ -55,7 +55,7 @@ const resolvers = {
     users: () => {
       return Object.values(users);
     },
-    // On renvoie toutes les donées de 'me' 
+    // On renvoie toutes les données de 'me' 
     me: () => {
       return me;
     },
@@ -63,6 +63,22 @@ const resolvers = {
     user: (parent, {id}) => {
       return users[id];
     },
+    
+  },
+  // Ici on impose a tous les usernames la valeur 'Hans'
+  // User: {
+  //     username: () => 'Hans',
+  // },
+
+  //Ici on renvoie le parent de username lorsque l'on demande le username(redondant)
+  // User: {
+  //   username: parent => {
+  //     return parent.username;
+  //   }
+  // }
+  //On definis ici a username un nom et prenom
+  User: {
+    username: user => `${user.firstname} ${user.lastname}`,
   },
 };
 //On lance le serveur Apollo
