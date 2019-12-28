@@ -30,10 +30,10 @@ Avec l'aide du Tuto suivant: "https://www.robinwieruch.de/graphql-apollo-server-
 - On installe ensuite les preset de Babel  "npm install @babel/preset-env --save-dev"
 - On cree un fichier .babelrc "touch .babelrc"
 - On ajoute le script suivant dans le fichier precedent :
-...
+```
 {
   "presets": [
     "@babel/preset-env"
   ]
 }
-...
+```
