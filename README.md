@@ -27,7 +27,7 @@ Avec l'aide du Tuto suivant: "https://www.robinwieruch.de/graphql-apollo-server-
 (Babel est un compileur javascript qui permet d'utiliser toutes les fonctionalité de celui ci car node ne possede pas toutes les fonctionalité)
 - On installe Babel avec la commande suivante "npm install @babel/core @babel/node --save-dev"
 - On change ensuite dans le fichier package.json la commande start dans script par "nodemon --exec babel-node src/index.js"
-- On installe ensuite les preset de Babel  "npm install @babel/preset-env --save-dev"
+- On installe ensuite les preset de Babel ```"npm install @babel/preset-env --save-dev"```
 - On cree un fichier .babelrc "touch .babelrc"
 - On ajoute le script suivant dans le fichier precedent :
 ```
