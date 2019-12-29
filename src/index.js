@@ -19,15 +19,16 @@ let msg = require("./page_1.js");
 const app = express();
 // On construit ici le schema de notre "base de donnée"
 //Le schema est un liste de definitions de type. On commence par le type Query puis on remplis les differents champs(User,Message) de la DB
-//gql´...` est le format GraphQl de DB
+//gql´...` est le format GraphQl de la DB
 //Pour le premier "users : [User!]" On cree un type users que tous les users possede par defaut et qui est obligatoire
 //Pour le second "me :User" On definis un objet me de typer User. Dans ce ca il a le "scalar type(champ classique)" username(string) et id(ID)
 //'!' veut dire que ces champs ne peuvent pas etre null 
 // Message 
 const schema = gql`
   type Query {
-    users: [User!]
     me: User
+
+    users: [User!]
     user(id : ID!) : User
 
     messages: [Message!]!
@@ -70,23 +71,28 @@ let messages = {
 const resolvers = {
 
   Query: {
+
     // On renvoie l'ensemble des donnée de la table users 
     users: () => {
       return Object.values(users);
     },
+
     // On renvoie toutes les données de 'me'
     // Le 3 eme 'me' argument viens de context.
     me: (parent, args, { me }) => {
       return me;
     },
+
     //On renvoie les donnée d'un user ciblé en fonction de son ID
     user: (parent, {id}) => {
       return users[id];
     },
+
     //On renvoie l'ensemble des donnée de la table message
     messages: () => {
       return Object.values(messages);
     },
+
     //On renvoie les donnée d'un message ciblé en fonction de son ID
     message: (parent, { id }) => {
       return messages[id];
@@ -109,7 +115,9 @@ const resolvers = {
   // User: {
   //   username: user => `${user.firstname} ${user.lastname}`,
   // },
+
 };
+
 //On lance le serveur Apollo
 const server = new ApolloServer({
   // Definitions des types -> schema et requete faite avec resolvers
@@ -119,6 +127,8 @@ const server = new ApolloServer({
     me: users[1],
   },
 });
+
+
 //On utilise ici 'applyMiddleware' pour lancer express avec le serveur appollo pour lancer Graphql playground
 //On lance dans le navigateur localhost:8000/graphql pour acceder a la page de graphql playground
 server.applyMiddleware({ app, path: '/graphql' });

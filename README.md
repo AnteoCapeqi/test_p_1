@@ -16,7 +16,7 @@ Avec l'aide du Tuto suivant: "https://www.robinwieruch.de/graphql-apollo-server-
 
 2. Install de nodeamon
 (FrameWork permettant de lancer en continu notre serveur sans devoir faire npm start a chaque fois qu'un changement est effectué.)
-- On install nodeamon avec la commande ```npm install nodemon --save-dev```
+- On installe nodeamon avec la commande ```npm install nodemon --save-dev```
 - On change ensuite dans le fichier package.json la commande start dans script par ```nodemon src/index.js```
 - On change le console.log en ("Ca roule toujours")
 
@@ -53,3 +53,88 @@ console.log(process.env.MY_SECRET);
 #### Attention : Bien mettre les elements dans l'ordre! Toujours commencer par l'import en premier
 
 5. Installation de Appollo Server avec Express
+(AppoloServer est geré par express et on utilise express graphql comme middleware)
+- On installe Appolo Server ```npm install apollo-server apollo-server-express --save```
+- On installe ensuite Express Graphql ```npm install express graphql --save```
+- On ajoute importe ensuite les deux modules dans index.js:
+```
+import express from 'express';
+import { ApolloServer } from 'apollo-server-express';
+```
+- On lance ensuite express dans index.js
+```
+const app = express();
+```
+- Ensuite on crée le schema de notre DB, on commence par un type query qui va definir la strucuture de notre DB. Le gql est pour le format Graphql ,
+On definis un champ "me" qui est de l'objet User,
+On definis ici une table user avec un champ username(qui sera de type String et obligatoire('!'))
+```
+const schema = gql`
+  type Query {
+    me: User
+  }
+  type User {
+    username: String!
+  }
+`;
+```
+- On crée ensuite le resolvers de notre DB. On a reussis a creer nos donnée nous allons aller les chercher avec ce resolver. Qui va effectuer pour nous des requetes sur notres DB
+On crée les Query qui seront nos requetes
+On fait une requete pour que nous renvoie l'username de 'me' avec la valeur 'Robin Wieruch'
+```
+const resolvers = {
+  Query: {
+    me: () => {
+      return {
+        username: 'Robin Wieruch',
+      };
+    },
+  },
+};
+```
+- On va ensuite configurer notre AppoloServer. On va lui attribuer comme deux premier arguments le shema et le resolvers
+```
+const server = new ApolloServer({
+  typeDefs: schema,
+  resolvers,
+});
+```
+- On va ensuite lancer le serveur. On place en premier argument de applyMiddleware notre app(express) et on definis le chemin de notre app sur serveur.
+```
+server.applyMiddleware({ app, path: '/graphql' });
+```
+- On lui indique quel ports utilisé pour le serveur. 'http://localhost:8000/graphql' nous donne accés au GraphQl Playground ou nous pourrons effectuer des requetes
+```
+app.listen({ port: 8000 }, () => {
+  console.log('Apollo Server on http://localhost:8000/graphql');
+});
+```
+- On ajoute ensuite dans l'import d'AppolloServer l'argument gql 
+```
+import { ApolloServer, gql } from 'apollo-server-express';
+```
+
+- Nous allons verifier sur le playground si tous fonctionne bien.
+```
+{
+  me {
+    username
+  }
+}
+```
+Nous recevons :
+```
+{
+    "me": {
+      "username": "Robin Wieruch"
+    }
+}
+```
+Parfait nous pouvons continuer
+
+#### Attention Cette partie sur Cors est optionelle. Toutefois elle est tres pratique
+- On installe Cors ```npm install cors --save```
+(Cors permet d'effectuer des requetes depuis un autre nom de domaine que le sien. tres pratique pour les tests)
+- On importe ensuite notre module sur index.js ```import cors from 'cors';```
+- On lance ensuite cors ```app.use(cors());```
+(Il faut cependant le placer apres ```const app = express();```)
