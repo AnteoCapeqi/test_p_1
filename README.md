@@ -138,3 +138,6 @@ Parfait nous pouvons continuer
 - On importe ensuite notre module sur index.js ```import cors from 'cors';```
 - On lance ensuite cors ```app.use(cors());```
 (Il faut cependant le placer apres ```const app = express();```)
+
+# Debut des Exercices
+
