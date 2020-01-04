@@ -4,7 +4,7 @@ Avec l'aide du Tuto suivant: "https://www.robinwieruch.de/graphql-apollo-server-
 0. Prérequis
 -Node.js
 
-1. Initialisation du projet avec Npm.
+### 1. Initialisation du projet avec Npm.
 - On commence par creer notre repo avec gitHub. 
 - Ensuite on lance un ```npm init -y``` pour commencer notre projet
 - On cree ensuite le repo src dans le root de notre app ```mkdir src```
@@ -12,15 +12,20 @@ Avec l'aide du Tuto suivant: "https://www.robinwieruch.de/graphql-apollo-server-
 - On effectue un console.log("Ok tout roule") dans index.js pour verifier que tous fonctionne lors du lancement de node
 - On lance ```node src/index.js```
 - On nous renvoie ("Ok tout roule").
-- On rajoute dans la partie script du fichier package.json ```"start": "node src/index.js",``` pour initialiser notre projet avec "npm start"
+- On rajoute dans la partie script du fichier package.json 
+```
+"start": "node src/index.js",
+```
+On peut initialiser notre projet avec "npm start" maintenant.
 
-2. Install de nodeamon
+### 2. Install de nodemon
 (FrameWork permettant de lancer en continu notre serveur sans devoir faire npm start a chaque fois qu'un changement est effectué.)
 - On installe nodeamon avec la commande ```npm install nodemon --save-dev```
 - On change ensuite dans le fichier package.json la commande start dans script par ```nodemon src/index.js```
-- On change le console.log en ("Ca roule toujours")
+- On lance ```npm start``` dans la console
+- On nous renvoie ("Ok tout roule").On continue
 
-3. Install de Babel
+### 3. Install de Babel
 (Babel est un compileur javascript qui permet d'utiliser toutes les fonctionalité de celui ci car node ne possede pas toutes les fonctionalité)
 - On installe Babel avec la commande suivante ```npm install @babel/core @babel/node --save-dev```
 - On change ensuite dans le fichier package.json la commande start dans script par ```nodemon --exec babel-node src/index.js```
@@ -34,9 +39,12 @@ Avec l'aide du Tuto suivant: "https://www.robinwieruch.de/graphql-apollo-server-
   ]
 }
 ```
-#### Attention: J'ai eu un soucis ici de permission avec Babel. Ma solution qui n'est sans doute pas la bonne est d'avoir effectué un Chmod 777 sur le fichier node_modules.
+- On lance ```npm start``` dans la console
+- On nous renvoie ("Ok tout roule").On continue
 
-4. Environnement Variables avec node.js 
+#### Attention: J'ai eu un soucis ici de permission avec Babel. Ma solution qui n'est sans doute pas la bonne est d'avoir effectué un Chmod 777 sur le fichier node_modules. ```sudo chmod 777 node_modules```
+
+### 4. Environnement Variables avec node.js 
 (Permet de stocké des variables dans le fichier env)
 - On crée le fichier .env dans le root ```touch .env```
 - On crée ensuite un variable dans le fichier .env (Afin de verifier que tous fonctionne) voici un exemple
@@ -49,10 +57,11 @@ MY_SECRET=Ca roule encore!
 import 'dotenv/config';
 console.log(process.env.MY_SECRET);
 ```
+- On lance ```npm start``` dans la console
 - La console ensuite nous affiche "Ca roule encore!" donc on peux continuer.
 #### Attention : Bien mettre les elements dans l'ordre! Toujours commencer par l'import en premier
 
-5. Installation de Appollo Server avec Express
+### 5. Installation de Appollo Server avec Express
 (AppoloServer est geré par express et on utilise express graphql comme middleware)
 - On installe Appolo Server ```npm install apollo-server apollo-server-express --save```
 - On installe ensuite Express Graphql ```npm install express graphql --save```

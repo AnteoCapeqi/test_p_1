@@ -12,6 +12,8 @@ import cors from 'cors';
 console.log(process.env.MY_SECRET);
 // On appelle notre fonction ("concole log depuis le fichier page 1")
 let msg = require("./page_1.js");
+// Ce framework permet de donner un id unique a chaque fois qu'il est call
+import uuidv4 from 'uuid/v4';
 
 
 
@@ -37,10 +39,16 @@ const schema = gql`
   type User {
     username: String!
     id :ID!
+    messages: [Message!]
   }
   type Message{
     id: ID!
     text: String!
+    user: User!
+  }
+  type Mutation {
+    createMessage(text: String!): Message!
+    deleteMessage(id: ID!): Boolean!
   }
 `;
 //User est une table qui est composée des champ Id et usernam
@@ -48,10 +56,12 @@ let users = {
   1: {
     id: '1',
     username: 'Robin Wieruch',
+    messageIds :[1],
   },
   2: {
     id: '2',
     username: 'Dave Davids',
+    messageIds :[2],
   },
 };
 //message est une table qui est composée des champ Id et usernam
@@ -59,10 +69,12 @@ let messages = {
   1: {
     id: '1',
     text: 'Hello World',
+    userId : '1',
   },
   2: {
     id: '2',
     text: 'By World',
+    userId : '2',
   },
 };
 // On defenis une variable "me" qui prend comme champ le premier user comme champ
@@ -96,9 +108,48 @@ const resolvers = {
     //On renvoie les donnée d'un message ciblé en fonction de son ID
     message: (parent, { id }) => {
       return messages[id];
-    },
+    }, 
   },
   
+  User : {
+    messages:user => {
+      return Object.values(messages).filter(
+        message => message.userID === user.id
+      )
+    },
+  },
+
+
+  Message: {
+    user: message => {
+      return users[message.userId]
+    },
+  },
+
+  Mutation : {
+    createMessage: (parent, {text} , {me}) => {
+      const id = uuidv4();
+      const message = {
+        id,
+        text,
+        userId : me.id,
+      };
+      messages[id] = message;
+      users[me.id].messageIds.push(id);
+      return message
+    },
+    deleteMessage:(parent, { id }) =>{
+      const{[ id ]: message, ...otherMessages }= messages;
+
+      if(!message) {
+        return false
+      }
+      messages = otherMessages;
+      return true;
+    }
+  },
+  
+
   // Ici on impose a tous les usernames la valeur 'Hans'
   // User: {
   //     username: () => 'Hans',
