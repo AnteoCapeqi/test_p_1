@@ -5,7 +5,7 @@ import hi from "./page_1.js" ;
 //Express est un framework qui permet de gerer des serveurs. On l'utilise ici avec apollo. 
 import express from 'express';
 //Apollo serveur est un framework permetannt de creer et gerer des bases de donnée avec graphql
-import { ApolloServer, gql } from 'apollo-server-express';
+import { ApolloServer } from 'apollo-server-express';
 //Nous permet d'accepeter plusieur demande de plusieur sources.
 import cors from 'cors';
 //1 . On affcihe dans la console une valeur stockée dans le .env
@@ -14,6 +14,10 @@ console.log(process.env.MY_SECRET);
 let msg = require("./page_1.js");
 // Ce framework permet de donner un id unique a chaque fois qu'il est call
 import uuidv4 from 'uuid/v4';
+
+import schema from './schema';
+import resolvers from './resolvers';
+import models from './models';
 
 
 
@@ -26,148 +30,6 @@ const app = express();
 //Pour le second "me :User" On definis un objet me de typer User. Dans ce ca il a le "scalar type(champ classique)" username(string) et id(ID)
 //'!' veut dire que ces champs ne peuvent pas etre null 
 // Message 
-const schema = gql`
-  type Query {
-    me: User
-
-    users: [User!]
-    user(id : ID!) : User
-
-    messages: [Message!]!
-    message(id: ID!): Message!
-  }
-  type User {
-    username: String!
-    id :ID!
-    messages: [Message!]
-  }
-  type Message{
-    id: ID!
-    text: String!
-    user: User!
-  }
-  type Mutation {
-    createMessage(text: String!): Message!
-    deleteMessage(id: ID!): Boolean!
-  }
-`;
-//User est une table qui est composée des champ Id et usernam
-let users = {
-  1: {
-    id: '1',
-    username: 'Robin Wieruch',
-    messageIds :[1],
-  },
-  2: {
-    id: '2',
-    username: 'Dave Davids',
-    messageIds :[2],
-  },
-};
-//message est une table qui est composée des champ Id et usernam
-let messages = {
-  1: {
-    id: '1',
-    text: 'Hello World',
-    userId : '1',
-  },
-  2: {
-    id: '2',
-    text: 'By World',
-    userId : '2',
-  },
-};
-// On defenis une variable "me" qui prend comme champ le premier user comme champ
-//const me = users[1]; Plus besoin de l'utiliser car il est init dans l'argument contexte(3eme argument) de Apollo serveur 
-// Le resolvers permet d'aller chercher les donnée dans la DB c'est ici que tous les query devront etre effectuée
-const resolvers = {
-
-  Query: {
-
-    // On renvoie l'ensemble des donnée de la table users 
-    users: () => {
-      return Object.values(users);
-    },
-
-    // On renvoie toutes les données de 'me'
-    // Le 3 eme 'me' argument viens de context.
-    me: (parent, args, { me }) => {
-      return me;
-    },
-
-    //On renvoie les donnée d'un user ciblé en fonction de son ID
-    user: (parent, {id}) => {
-      return users[id];
-    },
-
-    //On renvoie l'ensemble des donnée de la table message
-    messages: () => {
-      return Object.values(messages);
-    },
-
-    //On renvoie les donnée d'un message ciblé en fonction de son ID
-    message: (parent, { id }) => {
-      return messages[id];
-    }, 
-  },
-  
-  User : {
-    messages:user => {
-      return Object.values(messages).filter(
-        message => message.userID === user.id
-      )
-    },
-  },
-
-
-  Message: {
-    user: message => {
-      return users[message.userId]
-    },
-  },
-
-  Mutation : {
-    createMessage: (parent, {text} , {me}) => {
-      const id = uuidv4();
-      const message = {
-        id,
-        text,
-        userId : me.id,
-      };
-      messages[id] = message;
-      users[me.id].messageIds.push(id);
-      return message
-    },
-    deleteMessage:(parent, { id }) =>{
-      const{[ id ]: message, ...otherMessages }= messages;
-
-      if(!message) {
-        return false
-      }
-      messages = otherMessages;
-      return true;
-    }
-  },
-  
-
-  // Ici on impose a tous les usernames la valeur 'Hans'
-  // User: {
-  //     username: () => 'Hans',
-  // },
-
-  //Ici on renvoie le parent de username lorsque l'on demande le username(redondant)
-  // User: {
-  //   username: parent => {
-  //     return parent.username;
-  //   }
-  // }
-
-  //On definis ici a username un nom et prenom
-  // User: {
-  //   username: user => `${user.firstname} ${user.lastname}`,
-  // },
-
-};
 
 //On lance le serveur Apollo
 const server = new ApolloServer({
@@ -175,7 +37,8 @@ const server = new ApolloServer({
   typeDefs: schema,
   resolvers,
   context: {
-    me: users[1],
+    models,
+    me: models.users[1],
   },
 });
 
