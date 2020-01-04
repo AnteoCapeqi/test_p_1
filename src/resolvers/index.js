@@ -1,15 +1,15 @@
-import uuidv4 from 'uuid/v4';
+
+import userResolvers from './user';
+
+import messageResolvers from './message';
+
+export default [userResolvers, messageResolvers];
 
 
-
-
-// On defenis une variable "me" qui prend comme champ le premier user comme champ
+    // On defenis une variable "me" qui prend comme champ le premier user comme champ
 //const me = users[1]; Plus besoin de l'utiliser car il est init dans l'argument contexte(3eme argument) de Apollo serveur 
 // Le resolvers permet d'aller chercher les donnée dans la DB c'est ici que tous les query devront etre effectuée
-export default {
-
-    Query: {
-  
+    // EXEMPLE
     //   // On renvoie l'ensemble des donnée de la table users 
     //   users: () => {
     //     return Object.values(users);
@@ -34,63 +34,7 @@ export default {
     //   //On renvoie les donnée d'un message ciblé en fonction de son ID
     //   message: (parent, { id }) => {
     //     return messages[id];
-    //   },
-    users: (parent, args, { models }) => {
-        return Object.values(models.users);
-      },
-      user: (parent, { id }, { models }) => {
-        return models.users[id];
-      },
-      me: (parent, args, { me }) => {
-        return me;
-      },
-      messages: (parent, args, { models }) => {
-        return Object.values(models.messages);
-      },
-      message: (parent, { id }, { models }) => {
-        return models.messages[id];
-      },
-    },
-    
-    User : {
-      messages:(user , args , { models }) => {
-        return Object.values(models.messages).filter(
-          message => message.userID === user.id
-        )
-      },
-    },
-  
-  
-    Message: {
-      user: (message , args , { models }) => {
-        return users[message.userId]
-      },
-    },
-  
-    Mutation : {
-      createMessage: (parent, {text} , { me , models }) => {
-        const id = uuidv4();
-        const message = {
-          id,
-          text,
-          userId : me.id,
-        };
-        models.messages[id] = message;
-        models.users[me.id].messageIds.push(id);
-        return message
-      },
-      deleteMessage:(parent, { id }, {models}) =>{
-        const{[ id ]: message, ...otherMessages }= models.messages;
-  
-        if(!message) {
-          return false
-        }
-        models.messages = otherMessages;
-        return true;
-      }
-    },
-    
-  
+    //   },  
     // Ici on impose a tous les usernames la valeur 'Hans'
     // User: {
     //     username: () => 'Hans',
@@ -107,5 +51,3 @@ export default {
     // User: {
     //   username: user => `${user.firstname} ${user.lastname}`,
     // },
-  
-  };

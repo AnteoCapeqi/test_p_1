@@ -12,8 +12,6 @@ import cors from 'cors';
 console.log(process.env.MY_SECRET);
 // On appelle notre fonction ("concole log depuis le fichier page 1")
 let msg = require("./page_1.js");
-// Ce framework permet de donner un id unique a chaque fois qu'il est call
-import uuidv4 from 'uuid/v4';
 
 import schema from './schema';
 import resolvers from './resolvers';
