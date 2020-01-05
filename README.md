@@ -148,5 +148,27 @@ Parfait nous pouvons continuer
 - On lance ensuite cors ```app.use(cors());```
 (Il faut cependant le placer apres ```const app = express();```)
 
+### 6 Instalation de postgresql
+- On doit installer aussi un 'serveur' qui va nous permettre de stocké no DB. On choisis ici postgresql.
+- On installe postgresql  ```sudo apt install postgresql```
+- On doit ensuite se connecter au seul user(ou superuser) qu'il existe pour le moment. ```sudo -i -u postgres```
+- Une fois connecté on peut vois que l'on ext connecté sur le serveur on tape ```psql``` pour acceder a la partie graphql
+- On remarque que l'on a maintenant tous les droit ```postgres=# ```
+- On creee ensuite un autre user(On ne reste pas sur le super user) ```postgres=# CREATE USER <nom_utilisateur>;``` 
+#### NE PAS OUBLIER LE ' ; ' a la fin de la ligne
+- On donne ensuite des droits de creation a notre user ``` postgres=# ALTER ROLE <nom_utilisateur> WITH CREATEDB;``` 
+- On creee ensuite notre db avec comme utilisateurs celui definis auparavant postgres=# CREATE DATABASE ``` <nom_base_de_donnee> OWNER <nom_utilisateur>;``` 
+- On creee ensuite un mdp pour notre user  ``` postgres=# ALTER USER <nom_utilisateur> WITH ENCRYPTED PASSWORD 'mon_mot_de_passe';``` 
+- On peut maintenant changer de user et se reconnecter avec le nouveau.
+- 
+
+
+
+
+
+
+
+
+
 # Debut des Exercices
 
