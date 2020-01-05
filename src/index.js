@@ -13,9 +13,11 @@ console.log(process.env.MY_SECRET);
 // On appelle notre fonction ("concole log depuis le fichier page 1")
 let msg = require("./page_1.js");
 
+import uuidv4 from 'uuid/v4';
+
 import schema from './schema';
 import resolvers from './resolvers';
-import models from './models';
+import models, { sequelize } from './models';
 
 
 
@@ -31,24 +33,67 @@ const app = express();
 
 //On lance le serveur Apollo
 const server = new ApolloServer({
-  // Definitions des types -> schema et requete faite avec resolvers
   typeDefs: schema,
   resolvers,
-  context: {
+  context: async () => ({
     models,
-    me: models.users[1],
-  },
+    me: await models.User.findByLogin('rwieruch'),
+  }),
 });
 
-
-//On utilise ici 'applyMiddleware' pour lancer express avec le serveur appollo pour lancer Graphql playground
-//On lance dans le navigateur localhost:8000/graphql pour acceder a la page de graphql playground
 server.applyMiddleware({ app, path: '/graphql' });
-//On lance notre page sur le port 8000
-app.listen({ port: 8000 }, () => {
-  //Message d'affichage lorsque le serveur est en ligne
-  console.log('Apollo Server on http://localhost:8000/graphql');
+
+const eraseDatabaseOnSync = true;
+
+sequelize.sync({ force: eraseDatabaseOnSync }).then(async () => {
+  if (eraseDatabaseOnSync) {
+    createUsersWithMessages();
+  }
+  app.listen({ port: 8000 }, () => {
+    console.log('Apollo Server on http://localhost:8000/graphql');
+  });
 });
+const createUsersWithMessages = async () => {
+  await models.User.create(
+    {
+      username: 'rwieruch',
+      messages: [
+        {
+          text: 'Published the Road to learn React',
+        },
+      ],
+    },
+    {
+      include: [models.Message],
+    },
+  );
+  await models.User.create(
+    {
+      username: 'ddavids',
+      messages: [
+        {
+          text: 'Happy to release ...',
+        },
+        {
+          text: 'Published a complete ...',
+        },
+      ],
+    },
+    {
+      include: [models.Message],
+    },
+  );
+};
+
+// //AVANT SEQUELIZE
+// //On utilise ici 'applyMiddleware' pour lancer express avec le serveur appollo pour lancer Graphql playground
+// //On lance dans le navigateur localhost:8000/graphql pour acceder a la page de graphql playground
+// server.applyMiddleware({ app, path: '/graphql' });
+// //On lance notre page sur le port 8000
+// app.listen({ port: 8000 }, () => {
+//   //Message d'affichage lorsque le serveur est en ligne
+//   console.log('Apollo Server on http://localhost:8000/graphql');
+// });
 //Lancement de cors
 app.use(cors());
 
